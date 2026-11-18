@@ -19,6 +19,20 @@ claude
 Check the status bar shows `manual mode on`. (If it shows `auto mode on`, exit and
 redo the "Make Manual your starting mode" step in Session 0, section 4.)
 
+**Open a second terminal and keep it open.** Throughout the guide you check
+Claude's work by running commands yourself while Claude keeps its conversation.
+Open a new terminal window (on Ubuntu, `Ctrl+Alt+T`) and move into the project:
+
+```bash
+cd ~/claude-code-starter-guide/practice
+```
+
+A new window always starts in your home folder, so do this `cd` every time you
+open one; commands like `uv run pytest` only work inside `practice/`. From now
+on, "in your second terminal" means this window. Leave it open for every
+session. (Don't run these checks by leaving Claude with `/exit`: that ends the
+conversation, and later steps build on it.)
+
 ## 1. Explore: point Claude at files with `@`
 
 **Why:** Claude does better work when it has read the code it is about to change.
@@ -43,8 +57,7 @@ Read the answer and compare it with the files yourself:
 head -5 data/sample.csv
 ```
 
-(Run that in a second terminal, or after leaving Claude. Leaving and restarting
-is fine; nothing is lost.)
+(Run that in your second terminal.)
 
 Pass: Claude's answer matches what you see. The columns are `timestamp`,
 `sensor_id` and `value`; there are three sensors (`pressure_1`, `temp_1`,
@@ -110,7 +123,7 @@ each one before you choose **Yes**. When it asks to run `uv run pytest`, read th
 command, then allow it.
 
 When Claude says it is done, **don't take its word for it**. Run the checkpoint
-yourself (second terminal, or after `/exit`):
+yourself, in your second terminal:
 
 ```bash
 uv run pytest checkpoints/test_session_1.py

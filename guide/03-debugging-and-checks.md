@@ -6,7 +6,9 @@ never the test), and the project has two hooks: one runs ruff after every edit
 Claude makes, the other runs the tests before Claude may say it is finished.
 
 Before you start: Sessions 1 and 2 are committed, and `uv run pytest` passes in
-`practice/`.
+`practice/`. As before, keep two terminals open: Claude in one, and in the
+other your own checks, after `cd ~/claude-code-starter-guide/practice`. Steps 1
+to 3 in section 2 are one conversation, so don't leave Claude between them.
 
 ## 1. A failing check
 
@@ -68,7 +70,7 @@ answers "the test fails as expected" without the output, ask for it:
 Show me the pytest output.
 ```
 
-Then run it yourself (second terminal):
+Then run it yourself, in your second terminal:
 
 ```bash
 uv run pytest tests/test_stats.py
@@ -100,7 +102,7 @@ uv run pytest checkpoints/test_session_3.py and uv run pytest, and show me
 both outputs.
 ```
 
-Then check for yourself:
+Then check for yourself, in your second terminal:
 
 ```bash
 uv run pytest checkpoints/test_session_3.py
@@ -194,8 +196,8 @@ def double(x):
     return x*2
 ```
 
-Approve the write. The hook runs right after it. Then look at the file (second
-terminal, from `practice/`):
+Approve the write. The hook runs right after it. Then look at the file, in your
+second terminal:
 
 ```bash
 cat src/sensorlog/scratch.py
@@ -242,7 +244,7 @@ hook. It should then say the test's expected value looks wrong and ask you,
 rather than change the code to match it.
 
 Undo it with `/rewind`: pick the "This is a test of the Stop hook" prompt and
-choose **Restore code and conversation**. Then check (second terminal):
+choose **Restore code and conversation**. Then check, in your second terminal:
 
 ```bash
 git diff tests/

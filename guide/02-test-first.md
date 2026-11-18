@@ -9,6 +9,9 @@ Before you start: Session 1's checkpoint passes, and in `practice/` the command
 `uv run pytest checkpoints/test_session_2.py` fails with
 `ImportError: cannot import name 'clean' from 'sensorlog'`.
 
+As in Session 1, keep two terminals open: one running Claude, and a second one
+where you have run `cd ~/claude-code-starter-guide/practice`, for your own checks.
+
 You don't need to be good at writing tests for this session. You need to be able
 to **read** one, which is what the first two sections teach.
 
@@ -116,8 +119,7 @@ drop_duplicate_rows(df) -> pd.DataFrame
 - An empty DataFrame returns an empty DataFrame with the same columns.
 ```
 
-Approve the file write. Then run the tests yourself (second terminal, or after
-`/exit`):
+Approve the file write. Then run the tests yourself, in your second terminal:
 
 ```bash
 uv run pytest tests/test_clean.py
@@ -143,7 +145,7 @@ Implement drop_duplicate_rows until tests/test_clean.py passes. Do not modify
 the tests. Run uv run pytest tests/test_clean.py and show me the output.
 ```
 
-Approve the edits. Then check for yourself:
+Approve the edits. Then check for yourself, in your second terminal:
 
 ```bash
 uv run pytest tests/test_clean.py
@@ -157,13 +159,21 @@ code. Undo with `/rewind`, and repeat the prompt.
 
 ## 4. Repeat for `sort_by_time` and `fill_missing`
 
-Same two prompts, one function at a time. Run `/clear` between functions so each
-starts clean. Paste the spec into Prompt 1 each time.
+Same pattern, one function at a time, with the full prompts below. Run `/clear`
+before each function so it starts clean. `src/sensorlog/clean.py` and
+`tests/test_clean.py` already exist now; Claude adds to them.
 
-**`sort_by_time`:**
+### `sort_by_time`
+
+**Prompt 1:**
 
 ```text
-sort_by_time(df) -> pd.DataFrame, in src/sensorlog/clean.py
+Write failing tests for sort_by_time per this spec; do not implement yet.
+Add them to tests/test_clean.py, keeping the existing tests.
+
+Spec, in src/sensorlog/clean.py:
+sort_by_time(df) -> pd.DataFrame
+- df has the columns load_csv returns (timestamp, sensor_id, value).
 - Stable sort by (sensor_id, timestamp): rows grouped by sensor_id in ascending
   order, and within each sensor in ascending timestamp order. Rows that tie
   keep their original relative order.
@@ -172,10 +182,48 @@ sort_by_time(df) -> pd.DataFrame, in src/sensorlog/clean.py
 - An empty DataFrame returns an empty DataFrame with the same columns.
 ```
 
-**`fill_missing`:**
+In your second terminal:
+
+```bash
+uv run pytest tests/test_clean.py
+```
+
+Red: the new tests fail because `sort_by_time` doesn't exist or isn't
+implemented; the `drop_duplicate_rows` tests still pass. Freeze:
+
+```bash
+git add tests/test_clean.py
+```
+
+**Prompt 2:**
 
 ```text
-fill_missing(df, max_gap=pd.Timedelta("5min")) -> pd.DataFrame, in src/sensorlog/clean.py
+Implement sort_by_time until tests/test_clean.py passes. Do not modify the
+tests. Run uv run pytest tests/test_clean.py and show me the output.
+```
+
+In your second terminal:
+
+```bash
+uv run pytest tests/test_clean.py
+git diff tests/
+```
+
+Green: all tests pass, and `git diff tests/` prints nothing.
+
+### `fill_missing`
+
+Run `/clear` first.
+
+**Prompt 1:**
+
+```text
+Write failing tests for fill_missing per this spec; do not implement yet.
+Add them to tests/test_clean.py, keeping the existing tests.
+
+Spec, in src/sensorlog/clean.py:
+fill_missing(df, max_gap=pd.Timedelta("5min")) -> pd.DataFrame
+- df has the columns load_csv returns (timestamp, sensor_id, value).
 - For each sensor separately, fills NaN values by linear interpolation in time
   between the valid samples before and after the gap.
 - Only fills when the time between those two surrounding valid samples is at
@@ -187,10 +235,36 @@ fill_missing(df, max_gap=pd.Timedelta("5min")) -> pd.DataFrame, in src/sensorlog
 - An empty DataFrame returns an empty DataFrame with the same columns.
 ```
 
-Each time: Prompt 1, run, red for the right reason, `git add tests/test_clean.py`,
-Prompt 2, run, green, `git diff tests/` prints nothing.
+In your second terminal:
 
-When all three are done, run the checkpoint and commit:
+```bash
+uv run pytest tests/test_clean.py
+```
+
+Red: the new tests fail because `fill_missing` doesn't exist or isn't
+implemented; the earlier tests still pass. Freeze:
+
+```bash
+git add tests/test_clean.py
+```
+
+**Prompt 2:**
+
+```text
+Implement fill_missing until tests/test_clean.py passes. Do not modify the
+tests. Run uv run pytest tests/test_clean.py and show me the output.
+```
+
+In your second terminal:
+
+```bash
+uv run pytest tests/test_clean.py
+git diff tests/
+```
+
+Green: all tests pass, and `git diff tests/` prints nothing.
+
+When all three are done, run the checkpoint and commit, in your second terminal:
 
 ```bash
 uv run pytest checkpoints/test_session_2.py
