@@ -8,6 +8,7 @@ This file is for reading; it is not part of the test suite.
 from unittest.mock import patch
 
 import pandas as pd
+
 from sensorlog.clean import fill_missing
 
 
