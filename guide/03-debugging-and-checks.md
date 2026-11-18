@@ -8,7 +8,8 @@ Claude makes, the other runs the tests before Claude may say it is finished.
 Before you start: Sessions 1 and 2 are committed, and `uv run pytest` passes in
 `practice/`. As before, keep two terminals open: Claude in one, and in the
 other your own checks, after `cd ~/claude-code-starter-guide/practice`. Steps 1
-to 3 in section 2 are one conversation, so don't leave Claude between them.
+to 3 in section 2 are one conversation, so don't leave Claude between them. (If
+you close it by accident, `claude --continue` in `practice/` picks it up again.)
 
 ## 1. A failing check
 
@@ -36,8 +37,9 @@ Read the test to see what it expects:
 cat checkpoints/test_session_3.py
 ```
 
-So `mean_sample_interval` returns 30 seconds where 60 is expected. You don't yet
-know why, and neither does Claude. Keep it that way until you have evidence.
+So `mean_sample_interval` returns 30 seconds where 60 is expected. The test's
+name hints at a cause (the rows are out of order), but a hint isn't evidence:
+no code changes until Claude has shown you why.
 
 ## 2. Reproduce, then find the cause, then fix
 
@@ -201,7 +203,7 @@ second terminal:
 
 ```bash
 cat src/sensorlog/scratch.py
-uv run ruff check .
+uv run ruff check src/sensorlog/scratch.py
 ```
 
 Pass: the file is now only
@@ -291,8 +293,8 @@ ls .claude/hooks
 | `ls .claude/hooks` | Lists `lint-after-edit.sh` and `tests-before-stop.sh` |
 
 And from section 3: after Claude wrote `scratch.py`, `cat` showed it reformatted
-to `return x * 2` with no imports, and `uv run ruff check .` printed
-`All checks passed!`.
+to `return x * 2` with no imports, and
+`uv run ruff check src/sensorlog/scratch.py` printed `All checks passed!`.
 
 Stuck? From the repository root:
 `git show reference:practice/src/sensorlog/stats.py`.

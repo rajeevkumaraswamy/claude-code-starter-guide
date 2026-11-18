@@ -296,6 +296,15 @@ Check it the direct way: break the code on purpose and see what notices.
    ```
 
    If it finds a gap, have it add a test for it (same two-step pattern).
+   Then commit what it added, before you break anything: step 3 puts
+   `clean.py` back to its last commit, so uncommitted fixes would be lost.
+
+   ```bash
+   git add src tests
+   git commit -m "test: close gaps in clean tests"
+   ```
+
+   (`nothing to commit` means there was nothing new; carry on.)
 
 2. **Break `fill_missing` on purpose.** Open `src/sensorlog/clean.py` in an
    editor (`nano src/sensorlog/clean.py`). As the **first line of the body** of

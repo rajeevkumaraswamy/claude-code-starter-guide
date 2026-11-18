@@ -45,6 +45,12 @@ git branch --track reference origin/reference
 If you already renamed `origin` to `upstream` (Session 5), use
 `upstream/reference` instead of `origin/reference`.
 
+### `git status` says your branch is ahead and suggests `git push`
+
+Don't push. Until Session 5, `origin` is the shared guide repository, and
+pushing would put your answers on everyone's `main`. `git remote -v` shows
+where `origin` points. Session 5 gives you a repository of your own.
+
 ### `Author identity unknown` when you commit
 
 Git doesn't know your name yet. Set it once, then repeat the commit:
@@ -109,6 +115,18 @@ again, or edits to files that have nothing to do with the task.
    question, put `ultrathink` in the prompt.
 
 Never get out of a loop by telling Claude to "make the tests pass".
+
+## You closed Claude by accident
+
+You closed the terminal or pressed `Ctrl+D` twice in the middle of a step that
+needs one conversation. In the same folder (`practice/`), run:
+
+```bash
+claude --continue
+```
+
+It reopens the most recent conversation in that folder, with its history, and
+you carry on where you were.
 
 ## Context full
 

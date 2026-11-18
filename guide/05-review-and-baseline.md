@@ -18,10 +18,10 @@ checks, after `cd ~/claude-code-starter-guide/practice`.
 
 ## Before Session 5: your own GitHub repository (about 15 minutes, once)
 
-**Why:** a pull request needs a GitHub repository you can push to. You make a
-**private copy of your clone** under your own account. Don't fork the guide
-repository: a fork made on GitHub copies only the default branch unless you
-change an option, so you would lose the `reference` branch.
+**Why:** a pull request needs a GitHub repository of your own to push to. You
+make a **private copy of your clone** under your own account. Don't fork the
+guide repository: a fork made on GitHub copies only the default branch unless
+you change an option, so you would lose the `reference` branch.
 
 All of this happens in your normal terminal, not inside Claude. In the commands
 below, replace `<you>` with your GitHub username.
@@ -187,7 +187,10 @@ git add tests/test_plot.py tests/test_cli.py
 Check the new tests are tidy (the lint hook was off while Claude wrote them):
 run `uv run ruff check .`. If it flags anything in `tests/`, run
 `uv run ruff format tests` and `uv run ruff check --fix tests`, then `git add`
-the test files again.
+the test files again. If `ruff check` still flags something it can't fix, start
+`claude --settings '{"disableAllHooks": true}'` (the tests still fail, so keep
+the hooks off), ask "Fix the ruff findings in tests/ without changing what the
+tests check.", read the diff, `/exit`, then `git add` the test files again.
 
 **Prompt 2, hooks back on.**
 

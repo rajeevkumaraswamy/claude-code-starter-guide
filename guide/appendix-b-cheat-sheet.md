@@ -40,8 +40,12 @@ basics (`cd`, `ls`, `cat`, `Ctrl+C`), see [Appendix A](appendix-a-linux-primer.m
 | `/compact` (optionally with what to keep) | Summarise and continue (same task, long conversation) |
 | `/init`, `/memory` | Draft a project `CLAUDE.md`; open it for editing |
 
-Shell: `claude` (start, in `practice/`), `nano CLAUDE.md`,
-`git add ...` then `git commit -m "..."`.
+| Shell | What it does |
+| :- | :- |
+| `claude` (in `practice/`) | Start Claude Code |
+| `uv run pytest checkpoints/test_session_<N>.py` | Run session N's checkpoint on its own |
+| `nano CLAUDE.md` | Edit a file: `Ctrl+O` then `Enter` saves, `Ctrl+X` quits |
+| `git add ...` then `git commit -m "..."` | Commit your work (don't `git push` to the guide's `origin`) |
 
 ## Session 2: Test-first features
 
@@ -77,6 +81,7 @@ Rule: say "Fix the code so this test passes. Do not modify the tests.", never
 | `Ctrl+F` in the browser | Find Claude's quote on the source page |
 | "Use a subagent to ..." | Side task in its own context; only the summary comes back |
 | `claude --settings '{"disableAllHooks": true}'`, then `/exit`, `git add tests/...`, `claude` | Red step with hooks off, green step with hooks on |
+| `uv run ruff format tests`, `uv run ruff check --fix tests` | Tidy the tests Claude wrote with hooks off, then `git add` them again |
 
 ## Session 5: Review and team baseline
 
@@ -87,11 +92,14 @@ Rule: say "Fix the code so this test passes. Do not modify the tests.", never
 | `gh repo create <name> --private --source . --remote origin --push` | Private copy of your clone, `main` pushed |
 | `gh repo set-default <you>/<name>`, `gh repo set-default --view` | Make `gh` use your repository, not the guide's; check |
 | `git fetch origin`, `git remote set-head origin --auto` | Record origin's default branch (needed by `/security-review`) |
+| `git symbolic-ref refs/remotes/origin/HEAD` | Check it: prints `refs/remotes/origin/main` |
+| `git remote -v` | Where `origin` and `upstream` point |
 | `git switch -c <branch>` | New branch |
 | `uv sync`, `uv run sensorlog summary data/sample.csv` | Install the `sensorlog` command; run it |
 | `git add ...`, `git diff --staged` | Review exactly what you will commit |
 | `git push -u origin HEAD`, `gh pr create --fill` | Push the branch; open a pull request |
 | `gh pr view`, `gh pr diff`, `gh pr comment --body "..."` | Read and comment on a pull request |
+| `gh pr view --json commits --jq '.commits \| length'` | Count the commits in your pull request |
 | `gh pr list`, `gh pr review <n> --comment --body "..."` | List pull requests; review a teammate's |
 | `gh pr merge --squash --delete-branch` | Merge (optional) |
 | `gh auth refresh -s delete_repo`, `gh repo delete <name> --yes` | Delete the practice repository (optional) |
@@ -108,6 +116,8 @@ Rule: say "Fix the code so this test passes. Do not modify the tests.", never
 | :- | :- |
 | `git show reference:practice/src/sensorlog/<file>.py` | Show the reference solution for a file |
 | `git ls-tree --name-only reference practice/src/sensorlog/` | List the reference files |
+| `git branch --track reference origin/reference` | Create the local `reference` branch if it's missing |
+| `claude --continue` (in `practice/`) | Reopen the last conversation after closing Claude by accident |
 | `git restore practice/` (repo root) | Discard all uncommitted changes in `practice/` |
 | `/doctor`, `/permissions`, `/logout` | Checkup with fixes; edit saved allow rules; sign out |
 

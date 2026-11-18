@@ -220,7 +220,10 @@ git add tests/test_clean.py
 Check the new tests are tidy (the lint hook was off while Claude wrote them):
 run `uv run ruff check .`. If it flags anything in `tests/`, run
 `uv run ruff format tests` and `uv run ruff check --fix tests`, then `git add`
-the test files again.
+the test files again. If `ruff check` still flags something it can't fix, start
+`claude --settings '{"disableAllHooks": true}'` (the tests still fail, so keep
+the hooks off), ask "Fix the ruff findings in tests/ without changing what the
+tests check.", read the diff, `/exit`, then `git add` the test files again.
 
 **Prompt 2, hooks back on.** Start Claude normally:
 

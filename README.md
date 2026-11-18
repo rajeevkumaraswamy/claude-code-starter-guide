@@ -113,8 +113,8 @@ Try these in order:
    your settings files. Inside a session, `/doctor` runs a fuller checkup and offers
    to fix what it finds.
 3. **Look at the reference solution.** The `reference` branch has a finished
-   version of every file. Show one without changing your work, from the repository
-   root:
+   version of the code (`practice/src`). Show one file without changing your
+   work, from the repository root:
 
    ```bash
    git show reference:practice/src/sensorlog/stats.py

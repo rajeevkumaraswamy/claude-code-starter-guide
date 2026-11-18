@@ -256,7 +256,7 @@ obey; Session 3 shows how to enforce things.
    not be edited. Then check, in your second terminal:
 
    ```bash
-   grep -nEi 'clean\b[^)]|plot|hampel|outlier|mean_sample_interval|cli\b|exist yet|row order' CLAUDE.md
+   grep -nEi 'clean([^)]|$)|\bplot\b|hampel|outlier|mean_sample_interval|cli\b|exist yet|row order' CLAUDE.md
    ```
 
    Pass: no output. Each line it prints is one to delete or reword. (You can
@@ -284,8 +284,9 @@ git commit -m "feat: summarize; add project CLAUDE.md"
 ```
 
 From now on `git status` says your branch is ahead of `'origin/main'` and
-suggests `git push`. Ignore that: `origin` is the guide repository, which you
-can't push to. Session 5 sets up a repository of your own.
+suggests `git push`. Don't push: `origin` is the shared guide repository, and
+pushing would put your answers on everyone's `main`. Session 5 sets up a
+repository of your own.
 
 ## Checkpoint
 
