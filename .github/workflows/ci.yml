@@ -5,6 +5,7 @@ on:
     branches: [main, reference]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -66,22 +67,39 @@ jobs:
           exit "$fail"
 
   reference:
-    # Runs on pushes to main on purpose: main must stay in step with the solved branch.
+    # Runs MAIN's checkpoints and tests against the reference solution: check out
+    # main, then overlay only the solved code (practice/src, practice/pyproject.toml)
+    # from the reference branch. Runs on pushes to main and to reference, so either
+    # side changing out of step fails here.
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: reference
+          ref: main
+          fetch-depth: 0
+      - name: Overlay the reference solution
+        run: |
+          git fetch origin reference
+          git checkout FETCH_HEAD -- practice/src practice/pyproject.toml
+          git status --short
       - uses: astral-sh/setup-uv@v6
       - name: Sync practice project
         working-directory: practice
         run: uv sync
-      - name: Checkpoints and tests on reference
+      - name: Checkpoints and tests on main, solution from reference
         working-directory: practice
         run: uv run pytest checkpoints tests
+      - name: Ruff on the reference solution
+        working-directory: practice
+        run: |
+          uv run ruff check src
+          uv run ruff format --check src
 
   setup-smoke:
+    # Depends on claude.ai serving install.sh to GitHub runners, so it runs only
+    # on pushes to main (and by hand), not on every pull request.
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-24.04
     steps:
       - name: Install Claude Code (Linux native installer)
