@@ -188,8 +188,9 @@ In your second terminal:
 uv run pytest tests/test_clean.py
 ```
 
-Red: the new tests fail because `sort_by_time` doesn't exist or isn't
-implemented; the `drop_duplicate_rows` tests still pass. Freeze:
+Red: either an `ImportError` naming `sort_by_time` while collecting
+`tests/test_clean.py` (then no test in that file runs, which is expected), or
+the new tests fail and the `drop_duplicate_rows` tests pass. Freeze:
 
 ```bash
 git add tests/test_clean.py
@@ -241,8 +242,9 @@ In your second terminal:
 uv run pytest tests/test_clean.py
 ```
 
-Red: the new tests fail because `fill_missing` doesn't exist or isn't
-implemented; the earlier tests still pass. Freeze:
+Red: either an `ImportError` naming `fill_missing` while collecting
+`tests/test_clean.py` (then no test in that file runs, which is expected), or
+the new tests fail and the earlier ones pass. Freeze:
 
 ```bash
 git add tests/test_clean.py

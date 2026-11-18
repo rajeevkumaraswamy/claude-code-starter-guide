@@ -199,16 +199,22 @@ Run the tests yourself, in your second terminal:
 uv run pytest tests/test_clean.py
 ```
 
-**Red.** Pass: the new tests fail because `flag_outliers` doesn't exist (an
-`ImportError` naming `flag_outliers`) or isn't implemented; the tests from
-Session 2 still pass. If the failure is a typo or a broken test, ask Claude to
-fix the test, and run it again.
+**Red.** Pass: either an `ImportError` naming `flag_outliers` while collecting
+`tests/test_clean.py` (then no test in that file runs, which is expected), or
+the new tests fail and the tests from Session 2 pass. If the failure is a typo
+or a broken test (`SyntaxError`, or a `NameError` inside the test file), ask
+Claude to fix the test, and run it again.
 
 Leave this session with `/exit`, then freeze the tests:
 
 ```bash
 git add tests/test_clean.py
 ```
+
+Check the new tests are tidy (the lint hook was off while Claude wrote them):
+run `uv run ruff check .`. If it flags anything in `tests/`, run
+`uv run ruff format tests` and `uv run ruff check --fix tests`, then `git add`
+the test files again.
 
 **Prompt 2, hooks back on.** Start Claude normally:
 

@@ -1,6 +1,8 @@
 # Session 5: Review and team baseline
 
-About 90 minutes. By the end `sensorlog` can plot a sensor and has a command,
+About 2 hours, plus about 15 minutes of GitHub setup that you do first (next
+block). Take a break after section 4 if you like: your work waits on its branch.
+By the end `sensorlog` can plot a sensor and has a command,
 `sensorlog summary <csv>`, both built test first on a branch. You have reviewed
 the change yourself and with `/code-review`, pushed it to your own private GitHub
 repository and opened a pull request. You have also switched the project to the
@@ -14,14 +16,15 @@ Before you start: Session 4 is committed, and in `practice/` the command
 As before, keep two terminals open: Claude in one, and in the other your own
 checks, after `cd ~/claude-code-starter-guide/practice`.
 
-## 1. Your own GitHub repository (once)
+## Before Session 5: your own GitHub repository (about 15 minutes, once)
 
 **Why:** a pull request needs a GitHub repository you can push to. You make a
 **private copy of your clone** under your own account. Don't fork the guide
 repository: a fork made on GitHub copies only the default branch unless you
 change an option, so you would lose the `reference` branch.
 
-All of this happens in your normal terminal, not inside Claude.
+All of this happens in your normal terminal, not inside Claude. In the commands
+below, replace `<you>` with your GitHub username.
 
 1. **Install and log in to the GitHub CLI** (skip what you already have):
 
@@ -38,7 +41,7 @@ All of this happens in your normal terminal, not inside Claude.
    gh auth status
    ```
 
-   Pass: `Logged in to github.com account <you>`.
+   Pass: a line saying you are logged in to `github.com`, with your username.
 
 2. **Make sure everything is committed** and you are on `main`, from the
    repository root:
@@ -49,8 +52,8 @@ All of this happens in your normal terminal, not inside Claude.
    git branch --show-current
    ```
 
-   Pass: `nothing to commit, working tree clean` (untracked files are fine), and
-   `main`. If you have changes, commit them first.
+   Pass: `nothing to commit` (untracked files are fine), and `main`. If you have
+   changes, commit them first.
 
 3. **Create the repository and push `main` to it.** Your clone's `origin`
    currently points at the guide repository. Rename it to `upstream` (so you can
@@ -65,16 +68,28 @@ All of this happens in your normal terminal, not inside Claude.
    `--source .` uses this clone, `--push` pushes the branch you are on (`main`).
    Your local `reference` branch stays as it is; you don't need to push it.
 
-4. **Record origin's default branch.** `/security-review` (section 6) compares
+4. **Tell `gh` which repository is yours.** The clone now has two GitHub
+   remotes, so `gh pr ...` commands could ask which one to use, or pick the guide
+   repository. Set your own as the default:
+
+   ```bash
+   gh repo set-default <you>/claude-code-practice
+   gh repo set-default --view
+   ```
+
+   Pass: the second command prints `<you>/claude-code-practice`.
+
+5. **Record origin's default branch.** `/security-review` (section 5) compares
    your branch with it and fails with `ambiguous argument 'origin/HEAD...'`
    without this:
 
    ```bash
    git fetch origin
    git remote set-head origin --auto
+   git symbolic-ref refs/remotes/origin/HEAD
    ```
 
-   Pass: `'origin/HEAD' is now created and points to 'main'`. Then:
+   Pass: the last command prints `refs/remotes/origin/main`. Then:
 
    ```bash
    git remote -v
@@ -83,7 +98,7 @@ All of this happens in your normal terminal, not inside Claude.
    Pass: `origin` points at `github.com/<you>/claude-code-practice`, and
    `upstream` at the guide repository.
 
-## 2. A branch and the `sensorlog` command
+## 1. A branch and the `sensorlog` command
 
 **Why:** work for review lives on its own branch, so `main` stays the known-good
 version and the pull request shows exactly this change.
@@ -117,7 +132,7 @@ Pass: `uv sync` finishes without an error, and `uv run sensorlog` fails with
 `ModuleNotFoundError: No module named 'sensorlog.cli'`. The command exists now;
 the code behind it doesn't, yet.
 
-## 3. Test first: `plot_sensor` and the command
+## 2. Test first: `plot_sensor` and the command
 
 Same two prompts as Session 4: Prompt 1 with hooks off, so you can see red;
 Prompt 2 with hooks on.
@@ -157,16 +172,22 @@ Run the new tests yourself, in your second terminal:
 uv run pytest tests/test_plot.py tests/test_cli.py
 ```
 
-**Red.** Pass: they fail because the code doesn't exist yet: errors naming
-`sensorlog.plot` or `sensorlog.cli`, or, for tests that run the command,
-`ModuleNotFoundError` in the output. A typo or a broken test is the wrong reason:
-ask Claude to fix the test, and run it again.
+**Red.** Pass: either a `ModuleNotFoundError` naming `sensorlog.plot` or
+`sensorlog.cli` while collecting a test file (then no test in that file runs,
+which is expected), or the tests run and fail; for tests that run the command,
+the output shows `ModuleNotFoundError`. A typo or a broken test is the wrong
+reason: ask Claude to fix the test, and run it again.
 
 Leave this session with `/exit`, then freeze the tests:
 
 ```bash
 git add tests/test_plot.py tests/test_cli.py
 ```
+
+Check the new tests are tidy (the lint hook was off while Claude wrote them):
+run `uv run ruff check .`. If it flags anything in `tests/`, run
+`uv run ruff format tests` and `uv run ruff check --fix tests`, then `git add`
+the test files again.
 
 **Prompt 2, hooks back on.**
 
@@ -195,7 +216,7 @@ checkpoint ends with `4 passed`; and the command prints three lines, starting
 
 Stay in this Claude session for the next two sections.
 
-## 4. Review the diff yourself
+## 3. Review the diff yourself
 
 **Why:** you are the first reviewer of anything Claude writes. Hooks and tests
 catch what you thought to check; reading the diff catches the rest: code you
@@ -235,10 +256,10 @@ change anything.
 
 Typical answers: an empty CSV, a CSV with the wrong columns, an output folder
 that doesn't exist, a sensor with only NaN values. You don't have to fix them
-all now. Choose one that matters, and fix it the usual way: a failing test
-first, then the code.
+all now. Optional, if you have time: choose one that matters, and fix it the
+usual way, a failing test first, then the code.
 
-## 5. `/code-review`
+## 4. `/code-review`
 
 **Why:** a second reader with fresh context. `/code-review` is built into Claude
 Code (`/review` does the same). It runs as a subagent with its own context
@@ -262,7 +283,8 @@ For each finding, decide:
   not, can be wrong.
 
 Two options worth knowing: `/code-review high` reviews more widely and reports
-more (and less certain) findings; `/code-review --fix` applies the findings
+more (and less certain) findings, and later plain `/code-review` runs reuse the
+level you typed last (`/code-review medium` sets it back); `/code-review --fix` applies the findings
 itself. Skip `--fix` while you learn: you want to see each finding before any
 code changes, and its edits are not undone by `/rewind`. The review uses your
 plan's usage, like any other prompt.
@@ -270,7 +292,7 @@ plan's usage, like any other prompt.
 If you changed anything, run `uv run pytest` again and re-stage with
 `git add src tests`.
 
-## 6. Commit, push, open a pull request
+## 5. Commit, push, open a pull request
 
 ```bash
 git add src tests pyproject.toml
@@ -292,7 +314,7 @@ commit message as its title and description. It prints the pull request's URL.
 It checks the changes on your branch against `origin`'s default branch for risks
 such as injection or exposed secrets. For this change it will probably find
 little; on a real project, run it before you ask someone else to review. If it
-fails with `ambiguous argument 'origin/HEAD...'`, redo step 4 of section 1.
+fails with `ambiguous argument 'origin/HEAD...'`, redo step 5 of "Before Session 5".
 
 **Review the pull request.** This is how you review anyone's pull request. In
 your second terminal:
@@ -325,7 +347,7 @@ List anything you would ask the author to change, with file and line.
 (or `--approve`). GitHub doesn't let you approve your own pull request, which
 is why you used a comment above.
 
-## 7. Adopt the team baseline
+## 6. Adopt the team baseline
 
 **Why:** so far the `CLAUDE.md` in `practice/` is the one you wrote in Session 1,
 and its `.claude/` folder is the team's (copied in Session 3). The real project will
@@ -358,7 +380,7 @@ Open it (`cat .claude/settings.json` from `practice/`; it is the same file).
 | `"$schema": ...` | Lets your editor check and autocomplete the file. No effect on Claude Code. |
 | `"Bash(uv run pytest *)"`, `"Bash(uv run ruff *)"` | Claude may run the tests and ruff without asking. Safe, and you want them run often. |
 | `"Bash(git status *)"`, `"Bash(git diff *)"`, `"Bash(git log *)"` | Read-only git, without asking. `git commit` and `git push` still ask. |
-| `"Bash(gh pr view *)"`, `"Bash(gh pr diff *)"` | Read a pull request without asking; you saw this in section 6. |
+| `"Bash(gh pr view *)"`, `"Bash(gh pr diff *)"` | Read a pull request without asking; you saw this in section 5. |
 | `"deny"`: `Read(**/.env)`, `Read(**/.env.*)`, `Read(**/secrets/**)` | Claude's file tools may not read these. Not a sandbox: a script Claude runs can still open them, so keep real secrets out of the project folder. |
 | `"PostToolUse"` with `"matcher": "Edit\|Write"` | After every Edit or Write, run `lint-after-edit.sh` (ruff fix and format). `"timeout": 120` is in seconds. |
 | `"Stop"` | When Claude tries to finish, run `tests-before-stop.sh` (the test suite), with up to 600 seconds. |
@@ -449,7 +471,7 @@ has a `.claude/settings.json`, fill in "This project", commit both, then start
 team's copy in one place (this repository's `baseline/`), and propose changes to
 it by pull request, so everyone stays on the same version.
 
-## 8. Where next
+## 7. Where next
 
 You have used only what ships with Claude Code. That's deliberate: these are the
 habits everything else builds on. When you want more:

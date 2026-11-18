@@ -167,25 +167,32 @@ stop again while they still fail, the hook lets it stop, so it can't loop foreve
   press `Esc`, then tell it what to do.
 - **Every turn is slow:** the hook runs the whole suite each time Claude
   finishes. In a project with slow tests, see "What you may need to change in
-  the real project" in Session 5, section 7.
+  the real project" in Session 5, section 6.
 
 ## Session 5: GitHub and review
 
 - **`gh repo create` says it can't add remote `origin`:** your clone still has
   the guide repository as `origin`. Run `git remote rename origin upstream`,
   then the `gh repo create` command again.
+- **`gh` says `No default remote repository has been set`**, asks you to pick
+  a repository, or a `gh pr` command shows the guide repository instead of
+  yours: the clone has two GitHub remotes. Run
+  `gh repo set-default <you>/claude-code-practice`, then check with
+  `gh repo set-default --view`.
 - **`/security-review` fails with `ambiguous argument 'origin/HEAD...'`:**
   your clone doesn't know `origin`'s default branch. From the repository root:
 
   ```bash
   git fetch origin
   git remote set-head origin --auto
+  git symbolic-ref refs/remotes/origin/HEAD
   ```
 
-  Then run `/security-review` again.
+  The last command should print `refs/remotes/origin/main`. Then run
+  `/security-review` again.
 - **`uv run sensorlog` prints `Failed to spawn: sensorlog`:** the
   `[project.scripts]` lines are missing from `pyproject.toml`, or you didn't run
-  `uv sync` after adding them (Session 5, section 2).
+  `uv sync` after adding them (Session 5, section 1).
 - **`gh repo delete` fails with a missing scope:** run
   `gh auth refresh -s delete_repo` first.
 

@@ -85,6 +85,7 @@ Rule: say "Fix the code so this test passes. Do not modify the tests.", never
 | `gh auth login`, `gh auth status` | Log in to GitHub; check |
 | `git remote rename origin upstream` | Keep the guide repository as `upstream` |
 | `gh repo create <name> --private --source . --remote origin --push` | Private copy of your clone, `main` pushed |
+| `gh repo set-default <you>/<name>`, `gh repo set-default --view` | Make `gh` use your repository, not the guide's; check |
 | `git fetch origin`, `git remote set-head origin --auto` | Record origin's default branch (needed by `/security-review`) |
 | `git switch -c <branch>` | New branch |
 | `uv sync`, `uv run sensorlog summary data/sample.csv` | Install the `sensorlog` command; run it |
