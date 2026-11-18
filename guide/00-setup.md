@@ -201,7 +201,11 @@ anything, so you see what it is about to do.
    Look at the bottom of the screen: the status bar shows `manual mode on`.
 
 You only log in once. To switch accounts later, run `/login` inside a session.
-To leave Claude Code, type `/exit` (or press `Ctrl+D` twice).
+
+4. **Leave Claude Code:** type `/exit` and press Enter (pressing `Ctrl+D` twice
+   also works). You are back at your normal terminal prompt. Section 4 runs a
+   command there that makes Manual the starting mode for every session, so you
+   won't need the flag again.
 
 ## 4. Permission modes
 
@@ -223,8 +227,10 @@ you learn, you want to see each file edit and each command before it happens.
   would have approved.
 
 **Make Manual your starting mode for the rest of the guide**, so a plain `claude`
-starts the same way. This adds one setting to your personal settings file and keeps
-anything else already in it (it prints the file when done):
+starts the same way. **Run this in your normal terminal, not inside Claude Code**
+(if you see Claude's prompt, type `/exit` first). It adds one setting to your
+personal settings file and keeps anything else already in it (it prints the file
+when done):
 
 ```bash
 python3 - <<'EOF'
@@ -295,8 +301,8 @@ On a Max plan the default model is Opus 5.5 at `medium` effort. Look at them:
 /model
 ```
 
-The picker shows the models and marks the current one. Press `Esc` to leave it
-unchanged. (Choosing a model there with `Enter` saves it as your default for new
+The picker shows the models and marks the current one. Press `Esc` to close it
+without changing anything. (Choosing a model there with `Enter` saves it as your default for new
 sessions.)
 
 ```text
