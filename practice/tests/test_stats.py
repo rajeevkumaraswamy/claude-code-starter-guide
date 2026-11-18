@@ -28,5 +28,5 @@ def test_messy_data_has_out_of_order_endpoints():
     df = load_csv(Path(__file__).resolve().parent.parent / "data" / "messy.csv")
     for sid in df["sensor_id"].unique():
         ts = df.loc[df["sensor_id"] == sid, "timestamp"]
-        expected = ts.sort_values().diff().dropna().mean().total_seconds()
-        assert mean_sample_interval(df, sid) != expected
+        first, last = ts.iloc[0], ts.iloc[-1]
+        assert first != ts.min() or last != ts.max()
