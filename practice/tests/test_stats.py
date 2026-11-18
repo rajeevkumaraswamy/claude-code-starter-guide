@@ -18,3 +18,15 @@ def test_mean_interval_sorted_data():
 def test_mean_interval_single_sample_raises():
     with pytest.raises(ValueError, match="need at least 2 samples"):
         mean_sample_interval(_df([0]), "temp_1")
+
+
+def test_messy_data_has_out_of_order_endpoints():
+    from pathlib import Path
+
+    from sensorlog.load import load_csv
+
+    df = load_csv(Path(__file__).resolve().parent.parent / "data" / "messy.csv")
+    for sid in df["sensor_id"].unique():
+        ts = df.loc[df["sensor_id"] == sid, "timestamp"]
+        expected = ts.sort_values().diff().dropna().mean().total_seconds()
+        assert mean_sample_interval(df, sid) != expected

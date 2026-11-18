@@ -55,17 +55,15 @@ def make_messy(clean: pd.DataFrame) -> pd.DataFrame:
         df.index[df.sensor_id == "pressure_1"][40],
     ):
         df.loc[i, "value"] = np.nan
-    # 10 out-of-order rows: swap 5 disjoint pairs of consecutive same-sensor rows
-    swaps = [
-        ("temp_1", 5),
-        ("temp_1", 70),
-        ("temp_2", 10),
-        ("temp_2", 90),
-        ("pressure_1", 60),
-    ]
+    # out-of-order rows: 3 swapped pairs of consecutive same-sensor rows
+    swaps = [("temp_1", 70), ("temp_2", 90), ("pressure_1", 60)]
     for sid, k in swaps:
         i, j = df.index[df.sensor_id == sid][[k, k + 1]]
         df.iloc[[i, j]] = df.iloc[[j, i]].to_numpy()
+    # plus one early row per sensor moved to the end of the file, so every
+    # sensor's last row in file order is not its latest timestamp
+    moved = [df.index[df.sensor_id == sid][2] for sid in clean.sensor_id.unique()]
+    df = pd.concat([df.drop(index=moved), df.loc[moved]], ignore_index=True)
     # 5 exact duplicates, inserted right after the originals (never NaN rows)
     dup_positions = [11, 64, 125, 183, 305]
     assert not df.iloc[dup_positions].value.isna().any()
