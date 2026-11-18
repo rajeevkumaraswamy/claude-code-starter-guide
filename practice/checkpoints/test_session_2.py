@@ -12,14 +12,18 @@ from sensorlog import clean
 
 
 def _frame(sensors, minutes, values):
+    """Build a frame with the load_csv schema (even when empty)."""
     start = pd.Timestamp("2026-01-01", tz="UTC")
     return pd.DataFrame(
         {
-            "timestamp": pd.to_datetime(
-                [start + pd.Timedelta(minutes=m) for m in minutes], utc=True
+            "timestamp": pd.Series(
+                pd.to_datetime(
+                    [start + pd.Timedelta(minutes=m) for m in minutes], utc=True
+                ),
+                dtype="datetime64[ns, UTC]",
             ),
-            "sensor_id": sensors,
-            "value": [float(v) for v in values],
+            "sensor_id": pd.Series(sensors, dtype=object),
+            "value": pd.Series(values, dtype="float64"),
         }
     )
 

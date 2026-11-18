@@ -11,13 +11,18 @@ from sensorlog.stats import summarize
 
 
 def _frame(rows):
+    """Build a frame with the load_csv schema (even when empty)."""
     return pd.DataFrame(
         {
-            "timestamp": pd.to_datetime(
-                [f"2026-01-01 00:{i:02d}:00" for i in range(len(rows))], utc=True
+            "timestamp": pd.Series(
+                pd.to_datetime(
+                    [f"2026-01-01 00:{i:02d}:00" for i in range(len(rows))],
+                    utc=True,
+                ),
+                dtype="datetime64[ns, UTC]",
             ),
-            "sensor_id": [r[0] for r in rows],
-            "value": [float(r[1]) for r in rows],
+            "sensor_id": pd.Series([r[0] for r in rows], dtype=object),
+            "value": pd.Series([r[1] for r in rows], dtype="float64"),
         }
     )
 
