@@ -90,6 +90,7 @@ You see a message such as `You've hit your session limit · resets 3:45pm` or
 | You chose "don't ask again" for something you now regret | The rule was saved in `.claude/settings.local.json` | Run `/permissions`, find the rule and remove it. |
 | Claude still asks for `uv run pytest` after you copied the team settings | Project allow rules wait until you trust the folder, and settings load at the start of a session | Start a new session in `practice/` and accept the trust prompt if it appears. |
 | Claude asks again for a command you allowed | Allow rules match the start of the command. A different command doesn't match, and in a chain (`a && b`) every part must be allowed | Read it and answer; that's the prompt doing its job. |
+| Claude says a git command such as `git reset --hard` or `git restore` was denied | The team settings (`.claude/settings.json`, from Session 3) block git commands that throw away uncommitted work. No prompt appears | Nothing is lost. Let Claude carry on with its edit tools, or `/rewind`. If you really want the change gone, check `git diff` and run the command yourself. |
 | You pressed **No** by mistake | Claude didn't do it, and waits for your instructions | Tell it to go ahead, or what to do instead. |
 | The status bar shows `auto mode on` | New sessions start in auto unless you set Manual | Redo "Make Manual your starting mode", Session 0, section 4. |
 

@@ -386,12 +386,21 @@ Open it (`cat .claude/settings.json` from `practice/`; it is the same file).
 | `"Bash(git status *)"`, `"Bash(git diff *)"`, `"Bash(git log *)"` | Read-only git, without asking. `git commit` and `git push` still ask. |
 | `"Bash(gh pr view *)"`, `"Bash(gh pr diff *)"` | Read a pull request without asking; you saw this in section 5. |
 | `"deny"`: `Read(**/.env)`, `Read(**/.env.*)`, `Read(**/secrets/**)` | Claude's file tools may not read these. Not a sandbox: a script Claude runs can still open them, so keep real secrets out of the project folder. |
+| `"deny"`: `Bash(git checkout -- *)`, `Bash(git checkout * -- *)`, `Bash(git checkout . *)`, `Bash(git restore *)`, `Bash(git reset --hard *)`, `Bash(git clean *)` | Claude may not run git commands that throw away uncommitted work, even inside a chain like `cd src && git reset --hard`, and in every mode, auto included. No prompt appears: the command is refused and Claude is told it was denied. `git restore --staged` is blocked too (harmless, but one rule can't separate it). Branches, `git add` and `git commit` are unaffected. |
 | `"PostToolUse"` with `"matcher": "Edit\|Write"` | After every Edit or Write, run `lint-after-edit.sh` (ruff fix and format). `"timeout": 120` is in seconds. |
 | `"Stop"` | When Claude tries to finish, run `tests-before-stop.sh` (the test suite), with up to 600 seconds. |
 | `"$CLAUDE_PROJECT_DIR"` | The project root, so the hooks are found from any folder Claude is in. |
 
 Everything not in the allow list still asks you. `baseline/README.md` lists the
 same points, plus what to know when you install it elsewhere.
+
+**The git deny rules stop Claude, not you.** When work needs undoing, undo it
+yourself: `/rewind` puts back Claude's edits from a prompt onward, and in your own
+terminal `git diff <file>`, then `git restore <file>`, throws away uncommitted
+changes to one file. The rules match the command as Claude usually writes it, not
+every spelling (`git -C . reset --hard` isn't caught; plain `git checkout <file>`
+isn't either, because it looks like switching branch). Those still ask you in
+Manual mode, so the Session 0 rule stands: a prompt that would delete work gets **No**.
 
 **What you may need to change in the real project:**
 

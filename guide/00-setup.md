@@ -264,7 +264,8 @@ Read the command before you answer. For now, prefer plain **Yes**.
 `git checkout -- ...`, `git restore`, `git reset --hard`, `git clean` or `rm`,
 choose **No** unless you know why it is needed. These can delete work you
 haven't committed, and rewind can't bring it back. Committing at the end of each
-step keeps your work safe.
+step keeps your work safe. From Session 3 on, the team settings block the git ones
+for Claude outright; you can still run them yourself.
 
 ## 5. First conversation
 

@@ -42,6 +42,27 @@ Your project needs `uv`, `python3`, and pytest and ruff as dev dependencies
 - **Allowed without asking:** `uv run pytest ...`, `uv run ruff ...`, `git status`,
   `git diff`, `git log`, `gh pr view`, `gh pr diff`. Everything else still asks.
 - **Denied:** reading `.env`, `.env.*`, and anything under a `secrets/` directory.
+- **Denied:** git commands that throw away uncommitted work:
+  `git checkout -- <files>` (also `git checkout HEAD -- <files>`), `git checkout .`,
+  `git restore ...`, `git reset --hard ...` and `git clean ...`. `git restore --staged`
+  is harmless but blocked too, because one rule can't let it through. Branch work
+  (`git checkout -b`, `git switch`), `git add`, `git commit` and plain `git reset <file>`
+  are not affected.
+
+Deny rules beat allow rules and apply in every permission mode, including auto mode
+and `bypassPermissions`. They stop **Claude**, not you: you can still run any of these
+commands yourself in your own terminal, when you mean to.
+
+**What you see when Claude tries one.** No permission prompt appears. The command is
+refused before it runs, and Claude is told
+`Permission to use Bash with command <the command> has been denied.` (wording may vary
+between versions). It also works when the command is part of a chain, such as
+`cd src && git reset --hard`. Claude should then carry on with its edit tools, or ask you.
+
+**Undoing work yourself.** To go back to before a prompt, use `/rewind` (or `Esc` twice)
+and pick **Restore code and conversation**. To throw away your own uncommitted
+changes to a file, run `git restore <file>` in your terminal after checking
+`git diff <file>`. Commit often, so there is always a safe point to return to.
 
 ## Things to know
 
@@ -66,6 +87,11 @@ Your project needs `uv`, `python3`, and pytest and ruff as dev dependencies
   not stop a Python or Node script, or `grep -r` run in that folder, from opening the
   file. Keep real secrets out of the project folder, or turn on Claude Code's
   sandbox for OS-level blocking.
+- **The git deny rules match the command as Claude usually writes it.** They do not
+  catch the same thing written another way, such as `git -C . reset --hard`,
+  `/usr/bin/git restore .`, `bash -c '...'`, or `git checkout <file>` without `--`
+  (git can't tell that apart from switching branch, so it isn't blocked). In
+  Manual mode those still ask you first: read the prompt, and choose **No**.
 - **The lint hook only sees Claude's Edit and Write tools.** A file rewritten by a
   Bash command does not trigger it. The Stop hook still runs the tests.
 - **A project with no tests yet** is not blocked: pytest's "no tests collected" counts
