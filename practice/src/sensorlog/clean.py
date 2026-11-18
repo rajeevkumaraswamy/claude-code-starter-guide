@@ -1,6 +1,5 @@
 """Cleaning helpers for sensor logs. Each returns a new DataFrame."""
 
-import numpy as np
 import pandas as pd
 
 DEFAULT_MAX_GAP = pd.Timedelta("5min")
@@ -47,18 +46,17 @@ def flag_outliers(
     flags = pd.Series(False, index=df.index, dtype=bool)
     ordered = df.sort_values("timestamp", kind="stable")
     for _, sub in ordered.groupby("sensor_id"):
-        x = sub["value"].to_numpy(dtype=float)
+        x = sub["value"].astype(float).reset_index(drop=True)
         n = len(x)
         left = window // 2
         right = window - left - 1
-        hit = np.zeros(n, dtype=bool)
+        hit = [False] * n
         for i in range(n):
-            if np.isnan(x[i]):
+            if pd.isna(x.iloc[i]):
                 continue
-            win = x[max(0, i - left) : min(n, i + right + 1)]
-            win = win[~np.isnan(win)]
-            med = np.median(win)
-            mad = np.median(np.abs(win - med))
-            hit[i] = abs(x[i] - med) > n_sigmas * 1.4826 * mad
+            win = x.iloc[max(0, i - left) : min(n, i + right + 1)].dropna()
+            med = win.median()
+            mad = (win - med).abs().median()
+            hit[i] = bool(abs(x.iloc[i] - med) > n_sigmas * 1.4826 * mad)
         flags.loc[sub.index] = hit
     return flags
