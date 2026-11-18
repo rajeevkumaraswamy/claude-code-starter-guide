@@ -60,11 +60,9 @@ at files and stop a running command.
 
 ## Get the repository
 
-<!-- TODO(publish): replace <your-org> with the real GitHub org once the repo exists. -->
-
 ```bash
 cd ~
-git clone https://github.com/<your-org>/claude-code-starter-guide.git
+git clone https://github.com/rajeevkumaraswamy/claude-code-starter-guide.git
 cd claude-code-starter-guide
 git branch --track reference origin/reference
 ```
