@@ -236,6 +236,8 @@ show me the output.
 
 Approve the edits. When Claude finishes, the Stop hook runs the whole test suite;
 if anything is still red, you see Claude carry on with a message from the hook.
+Claude may ask to run `git checkout -- src/sensorlog/clean.py` to undo a trial
+change: choose **No** (Session 0, section 4: commands that delete work).
 Then check for yourself, in your second terminal:
 
 ```bash

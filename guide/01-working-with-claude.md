@@ -247,12 +247,22 @@ obey; Session 3 shows how to enforce things.
    - A 50-line copy of the README. It uses up context every session and buries
      the lines that matter. Keep the file short; the docs suggest under 200 lines.
 
-   **Delete any lines that describe what the checkpoint tests expect.** `/init`
-   reads `checkpoints/` and may list what Sessions 2 to 5 must build (a `clean`
-   module, an outlier filter, how `mean_sample_interval` must behave). Those are
-   the answers to later sessions; with them in `CLAUDE.md`, Claude acts on them
-   before you get there. Keep only a line saying `checkpoints/` holds the
-   acceptance tests and must not be edited.
+   **Remove the answers to later sessions.** `/init` reads `checkpoints/` and
+   often writes down what Sessions 2 to 5 must build. With that in `CLAUDE.md`,
+   Claude acts on it before you get there. Delete every line that mentions
+   `clean`, `plot`, the CLI, outliers or Hampel, `mean_sample_interval`, or
+   modules that "don't exist yet". If such a line also says something useful,
+   reword it without those words. About `checkpoints/`, keep only that it must
+   not be edited. Then check, in your second terminal:
+
+   ```bash
+   grep -nEi 'clean\b[^)]|plot|hampel|outlier|mean_sample_interval|cli\b|exist yet|row order' CLAUDE.md
+   ```
+
+   Pass: no output. Each line it prints is one to delete or reword. (You can
+   also ask Claude: "Remove from CLAUDE.md every line about what checkpoints/
+   tests expect or about modules that don't exist yet." Read the change, then
+   run the same `grep`.)
 
    Later, to add a line you can also just ask Claude: "Add to CLAUDE.md: ...".
    Read the change before you approve it.

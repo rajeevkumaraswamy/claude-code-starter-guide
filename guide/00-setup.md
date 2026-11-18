@@ -260,6 +260,12 @@ and asks. You will usually get three kinds of answer:
 
 Read the command before you answer. For now, prefer plain **Yes**.
 
+**One rule for commands that delete work.** If a permission prompt shows
+`git checkout -- ...`, `git restore`, `git reset --hard`, `git clean` or `rm`,
+choose **No** unless you know why it is needed. These can delete work you
+haven't committed, and rewind can't bring it back. Committing at the end of each
+step keeps your work safe.
+
 ## 5. First conversation
 
 **Why:** asking Claude to explain an unfamiliar project is the safest useful thing
