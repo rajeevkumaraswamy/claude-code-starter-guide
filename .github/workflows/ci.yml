@@ -1,0 +1,68 @@
+name: ci
+
+on:
+  push:
+    branches: [main, reference]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    # reference holds solutions, so the starter-state contract only applies elsewhere
+    if: github.ref != 'refs/heads/reference'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Sync practice project
+        working-directory: practice
+        run: uv sync
+      - name: Practice tests
+        working-directory: practice
+        run: uv run pytest tests
+      - name: Ruff lint
+        working-directory: practice
+        run: uv run ruff check .
+      - name: Ruff format check
+        working-directory: practice
+        run: uv run ruff format --check .
+      - name: Tools tests
+        run: uv run --with pytest pytest tools/tests -q
+      - name: Guide checker
+        run: uv run --with pytest python tools/check_guide.py .
+      - name: Starter-state contract (session 1 checkpoint must fail on main)
+        working-directory: practice
+        run: |
+          if uv run pytest checkpoints/test_session_1.py; then
+            echo "::error::checkpoints/test_session_1.py passes on the starter branch; solutions must live only on 'reference'"
+            exit 1
+          fi
+          echo "Checkpoint fails as expected (starter state intact)."
+
+  reference:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: reference
+      - uses: astral-sh/setup-uv@v6
+      - name: Sync practice project
+        working-directory: practice
+        run: uv sync
+      - name: Checkpoints and tests on reference
+        working-directory: practice
+        run: uv run pytest checkpoints tests
+
+  setup-smoke:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Install Claude Code (Linux native installer)
+        run: curl -fsSL https://claude.ai/install.sh | bash
+      - name: Verify install
+        run: |
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/claude" --version
