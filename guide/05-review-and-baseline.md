@@ -254,6 +254,10 @@ inputs, most likely first, and say for each whether a test covers it. Don't
 change anything.
 ```
 
+Claude may ask to run small probe scripts (for example a `uv run python`
+command that feeds the code an empty file) to check its guesses. Read each one;
+**No** is fine, and Claude answers from reading the code instead.
+
 Typical answers: an empty CSV, a CSV with the wrong columns, an output folder
 that doesn't exist, a sensor with only NaN values. You don't have to fix them
 all now. Optional, if you have time: choose one that matters, and fix it the

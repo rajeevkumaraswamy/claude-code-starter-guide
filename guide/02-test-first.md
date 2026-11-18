@@ -126,8 +126,9 @@ uv run pytest tests/test_clean.py
 ```
 
 **Red.** Pass: the run **fails**. Read why. At this stage the right reason is that
-the function doesn't exist yet (an `ImportError` or `AttributeError` naming
-`clean` or `drop_duplicate_rows`) or isn't implemented. A wrong reason is a typo
+the function doesn't exist yet (a `ModuleNotFoundError: No module named
+'sensorlog.clean'`, or an `ImportError` or `AttributeError` naming `clean` or
+`drop_duplicate_rows`) or isn't implemented. A wrong reason is a typo
 or a broken test, for example a `SyntaxError` or a `NameError` inside the test
 file: then ask Claude to fix the test, and run it again.
 
@@ -137,6 +138,9 @@ can see later whether anything changed them:
 ```bash
 git add tests/test_clean.py
 ```
+
+(Claude may notice the staged file and mention it, or guess that something else
+staged it. That was you; tell it so if it asks.)
 
 **Prompt 2: the code.**
 

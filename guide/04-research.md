@@ -46,11 +46,17 @@ occasional single-sample spikes.
 Read each address before you answer. Plain **Yes** is the right default. Use
 "don't ask again" only for a documentation site you will come back to.
 
-Expect three methods, or close variants of them: a **z-score** (distance from
-the mean in standard deviations), the **IQR rule** (outside the quartiles by
-1.5 times their spread), and the **Hampel filter** (distance from a rolling
-median, measured in median absolute deviations). Your answer will be worded
-differently from anyone else's.
+Claude may also ask to run a shell command, for example to pull the text out of
+a PDF it fetched. Read it; if you aren't sure what it does, choose **No**, and
+Claude carries on with what it has.
+
+Expect three methods, often these or close variants of them: a **z-score**
+(distance from the mean in standard deviations, sometimes over a rolling
+window), the **IQR rule** (outside the quartiles by 1.5 times their spread), and
+the **Hampel filter** (distance from a rolling median, measured in median
+absolute deviations). Claude may pick a different third method, such as a
+seasonal decomposition; section 4 compares the three above. Your answer will be
+worded differently from anyone else's.
 
 Pass: you have three methods, each with at least one URL.
 

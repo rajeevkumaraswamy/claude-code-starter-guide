@@ -247,6 +247,13 @@ obey; Session 3 shows how to enforce things.
    - A 50-line copy of the README. It uses up context every session and buries
      the lines that matter. Keep the file short; the docs suggest under 200 lines.
 
+   **Delete any lines that describe what the checkpoint tests expect.** `/init`
+   reads `checkpoints/` and may list what Sessions 2 to 5 must build (a `clean`
+   module, an outlier filter, how `mean_sample_interval` must behave). Those are
+   the answers to later sessions; with them in `CLAUDE.md`, Claude acts on them
+   before you get there. Keep only a line saying `checkpoints/` holds the
+   acceptance tests and must not be edited.
+
    Later, to add a line you can also just ask Claude: "Add to CLAUDE.md: ...".
    Read the change before you approve it.
 
@@ -265,6 +272,10 @@ Leave Claude with `/exit` and commit your work (from `practice/`):
 git add src tests CLAUDE.md
 git commit -m "feat: summarize; add project CLAUDE.md"
 ```
+
+From now on `git status` says your branch is ahead of `'origin/main'` and
+suggests `git push`. Ignore that: `origin` is the guide repository, which you
+can't push to. Session 5 sets up a repository of your own.
 
 ## Checkpoint
 
