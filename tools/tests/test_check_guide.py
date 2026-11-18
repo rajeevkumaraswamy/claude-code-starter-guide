@@ -129,3 +129,41 @@ def test_paths_not_slash_commands(tmp_path, capsys):
 
 def test_no_guide_dir_ok(tmp_path, capsys):
     assert run(make_repo(tmp_path), capsys) == (0, "")
+
+
+def test_bare_flag_id_accepted(tmp_path, capsys):
+    ledger = LEDGER + "\n"
+    ledger = ledger.replace(
+        "| `/old`", "| `--permission-mode` | PM | x | u | d | n |\n| `/old`"
+    )
+    text = "`claude --permission-mode plan` `claude --other`\n"
+    code, out = run(make_repo(tmp_path, text, ledger), capsys)
+    assert code == 1
+    assert "claude --other" in out and "permission-mode" not in out
+
+
+def test_claude_prefixed_flag_id_accepted(tmp_path, capsys):
+    assert run(make_repo(tmp_path, '`claude -p "x"`\n'), capsys)[0] == 0
+
+
+def _settings(repo, body):
+    d = repo / "baseline" / ".claude"
+    d.mkdir(parents=True)
+    (d / "settings.json").write_text(body)
+
+
+def test_settings_missing_key_fails(tmp_path, capsys):
+    repo = make_repo(tmp_path)
+    _settings(repo, '{"bogusKey": 1, "hooks": {"BogusEvent": []}}')
+    code, out = run(repo, capsys)
+    assert code == 1
+    assert "baseline/.claude/settings.json:1: settings key 'bogusKey'" in out
+    assert "'BogusEvent'" in out
+
+
+def test_settings_present_key_passes(tmp_path, capsys):
+    repo = make_repo(tmp_path)
+    _settings(repo, '{"permissions": {}, "hooks": {"Stop": []}}')
+    repo_ledger = repo / "tools" / "feature-ledger.md"
+    repo_ledger.write_text(repo_ledger.read_text() + "\npermissions.allow hooks.Stop\n")
+    assert run(repo, capsys) == (0, "")

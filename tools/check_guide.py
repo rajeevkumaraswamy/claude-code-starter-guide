@@ -2,7 +2,8 @@
 
 Run from the repo root:  uv run --with pytest python tools/check_guide.py .
 
-Scans guide/*.md and every .md file under baseline/ and reports, one per line as
+Scans guide/*.md, every .md file under baseline/, and every .claude/settings.json
+under baseline/ (.sh files are not scanned), and reports, one per line as
 `file:line: message`, anything that is not backed by the ledger or the repo.
 Exit code is 1 if any problem was found, else 0. A missing guide/ is fine.
 
@@ -20,11 +21,17 @@ Command matching (regex based, outside and inside code)
     second `/` (e.g. `/usr/bin`) is a path, not a command.
   * `claude <x> ...` -> id `claude <x>` where x is the first token (a
     subcommand or flag, e.g. `claude doctor`, `claude -p`). Bare `claude`
-    needs no entry. Aliases (`claude -c`) need their own id to be taught.
+    needs no entry. For flags the bare id (`--model`, `-p`) is accepted as
+    well as `claude --model`. Aliases (`claude -c`) need their own id to be taught.
 - Fenced ``` blocks: a line starting (after optional indent and `$ `) with
   `claude <x>` is checked like the above, and a line starting with `/word`
   (a prompt typed into Claude) is checked as a slash command. Nothing else in a
   fence is checked.
+
+Settings files
+- Each top-level key, and each event name under `hooks`, must appear as a plain
+  substring somewhere in the ledger file. Misses are reported as
+  `path:1: settings key 'X' not in the feature ledger`.
 
 Paths and links
 - Inline code spans starting with practice/, baseline/, guide/ or tools/ must
@@ -36,6 +43,7 @@ Paths and links
   relative to the file; any #anchor is stripped.
 """
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -77,6 +85,9 @@ def load_ledger(root: Path) -> dict[str, bool]:
 
 
 def check_id(ledger, key, where, problems):
+    bare = key.split(" ", 1)[1] if key.startswith("claude -") else None
+    if bare and key not in ledger and bare in ledger:
+        key = bare
     if key not in ledger:
         problems.append(f"{where}: `{key}` is not in the feature ledger")
     elif ledger[key]:
@@ -112,6 +123,17 @@ def check_file(path: Path, root: Path, ledger, problems):
                 problems.append(f"{where}: broken link `{target}`")
 
 
+def check_settings(path: Path, root: Path, ledger_text: str, problems):
+    data = json.loads(path.read_text())
+    keys = list(data)
+    if isinstance(data.get("hooks"), dict):
+        keys += list(data["hooks"])
+    for key in keys:
+        if key not in ledger_text:
+            rel = path.relative_to(root)
+            problems.append(f"{rel}:1: settings key '{key}' not in the feature ledger")
+
+
 def check_path(span: str, root: Path, where: str, problems):
     token = span.split()[0] if span.split() else ""
     if CHECKPOINT.match(token):
@@ -132,6 +154,9 @@ def main(repo_root: Path) -> int:
     problems: list[str] = []
     for f in files:
         check_file(f, root, ledger, problems)
+    ledger_text = (root / "tools" / "feature-ledger.md").read_text()
+    for f in sorted((root / "baseline").rglob(".claude/settings.json")):
+        check_settings(f, root, ledger_text, problems)
     for p in problems:
         print(p)
     return 1 if problems else 0
