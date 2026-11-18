@@ -33,16 +33,40 @@ jobs:
         run: uv run --with pytest pytest tools/tests -q
       - name: Guide checker
         run: uv run --with pytest python tools/check_guide.py .
-      - name: Starter-state contract (session 1 checkpoint must fail on main)
+      - name: Starter-state contract (every session checkpoint must fail on main)
         working-directory: practice
         run: |
-          if uv run pytest checkpoints/test_session_1.py; then
-            echo "::error::checkpoints/test_session_1.py passes on the starter branch; solutions must live only on 'reference'"
-            exit 1
-          fi
-          echo "Checkpoint fails as expected (starter state intact)."
+          # Each checkpoint must fail for the expected reason (not a crash or typo),
+          # otherwise a solution has leaked into main.
+          fail=0
+          for n in 1 2 3 4 5; do
+            f="checkpoints/test_session_${n}.py"
+            if [ "$n" = 3 ]; then
+              pattern='AssertionError|FAILED'   # S3 fails by assertion, not import
+            else
+              pattern='ImportError|ModuleNotFoundError|cannot import name'
+            fi
+            set +e
+            out=$(uv run pytest "$f" 2>&1)
+            rc=$?
+            set -e
+            echo "::group::$f (exit $rc)"
+            echo "$out"
+            echo "::endgroup::"
+            if [ "$rc" -ne 1 ] && [ "$rc" -ne 2 ]; then
+              echo "::error::$f exited $rc; expected 1 or 2 (0 means a solution leaked into main, other codes mean a crash or bad path)"
+              fail=1
+            elif ! echo "$out" | grep -Eq "$pattern"; then
+              echo "::error::$f failed, but not for the expected reason ($pattern)"
+              fail=1
+            else
+              echo "OK: $f fails as expected (starter state intact)."
+            fi
+          done
+          exit "$fail"
 
   reference:
+    # Runs on pushes to main on purpose: main must stay in step with the solved branch.
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
@@ -64,5 +88,4 @@ jobs:
         run: curl -fsSL https://claude.ai/install.sh | bash
       - name: Verify install
         run: |
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           "$HOME/.local/bin/claude" --version
