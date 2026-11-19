@@ -136,3 +136,8 @@ Try these in order:
   output or a diff before you believe it.
 - Claude Code changes often. If a command here does not behave as described, run
   `claude update`, then check the official docs.
+
+## License
+
+MIT. See [LICENSE](LICENSE). Last checked against the Claude Code docs in
+November 2026; Claude Code changes often, so verify anything that behaves differently.
