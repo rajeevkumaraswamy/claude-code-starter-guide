@@ -5,6 +5,9 @@ a small Python project (`sensorlog`, a sensor-log toolkit) with Claude, one sess
 at a time. Each step is checked against the real state of the project, not against
 what Claude says.
 
+**Read it online:** https://rajeevkumaraswamy.github.io/claude-code-starter-guide/
+(the same guide as one web page, rebuilt on every change).
+
 Written for Ubuntu 24.04 and an individual Claude Max (5x) plan. Verified against the
 official Claude Code docs (https://code.claude.com/docs/en/) in November 2026.
 
