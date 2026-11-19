@@ -80,6 +80,7 @@ Layout:
 | `practice/checkpoints/` | One test file per session. These tell you whether you finished the session. |
 | `baseline/` | The team `CLAUDE.md`, `.claude/settings.json` and hooks. Session 3 copies them into `practice/`; Session 5 explains them. |
 | `tools/` | Maintainer tools: the feature ledger and the guide checker. You can ignore them. |
+| `site/` | Builds the single-page HTML version of this guide (`site/build_guide.py`). You can ignore it. |
 
 ## How checkpoints work
 
